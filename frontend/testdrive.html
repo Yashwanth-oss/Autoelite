@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIP Test Drive Scheduler - AutoElite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/testdrive.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <style>
+    .slots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin: 12px 0 20px;
+    }
+    .slot-chip {
+      padding: 10px 12px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--bg-primary);
+      transition: all 0.2s;
+    }
+    .slot-chip:hover:not(.disabled) {
+      border-color: var(--accent-primary);
+      background: rgba(37, 99, 235, 0.08);
+    }
+    .slot-chip.selected {
+      background: var(--accent-primary);
+      color: white;
+      border-color: var(--accent-primary);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+    .slot-chip.disabled {
+      opacity: 0.45;
+      background: #e2e8f0;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+    body.dark .slot-chip.disabled {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .location-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .location-btn {
+      padding: 12px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .location-btn.active {
+      border-color: var(--accent-primary);
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--accent-primary);
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" style="text-decoration:none;color:inherit;"><h2>🚗 AutoElite</h2></a>
+    <div class="nav-controls">
+      <a href="cars.html"><button>Showroom</button></a>
+      <a href="compare.html"><button>Compare</button></a>
+      <a href="calculator.html"><button>EMI Calculator</button></a>
+      <button onclick="toggleDarkMode()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="testdrive-wrapper">
+    <div class="testdrive-container">
+      <h2>📅 Schedule a VIP Test Drive</h2>
+      <p class="subtitle">Real-time calendar slot scheduler powered by MongoDB</p>
+
+      <div class="selected-car-card">
+        <img id="carImage" class="car-image" src="images/mercedes.jpg" alt="Selected Car" onerror="this.src='images/mercedes.jpg'">
+        <div>
+          <h3 id="carName">Selected Vehicle</h3>
+          <span style="font-size:0.8rem;color:#10b981;font-weight:700;">● VIP Concierge Available</span>
+        </div>
+      </div>
+
+      <form id="testDriveForm" onsubmit="handleTestDriveSubmit(event)">
+        <input type="hidden" id="carId">
+        
+        <label for="userName">Full Name</label>
+        <input type="text" id="userName" placeholder="e.g. Rahul Verma" required>
+
+        <label for="userEmail">Email Address</label>
+        <input type="email" id="userEmail" placeholder="e.g. rahul@example.com" required>
+
+        <label for="userPhone">Phone Number</label>
+        <input type="tel" id="userPhone" placeholder="e.g. +91 98765 43210" required>
+
+        <label for="bookingDate">1. Choose Date</label>
+        <input type="date" id="bookingDate" required onchange="fetchTimeSlots()">
+
+        <label>2. Select Experience Format</label>
+        <div class="location-toggle">
+          <div id="locShowroom" class="location-btn active" onclick="selectLocation('Showroom Visit')">🏢 Showroom Visit</div>
+          <div id="locDoorstep" class="location-btn" onclick="selectLocation('Doorstep VIP Delivery')">🏡 Doorstep VIP Delivery</div>
+        </div>
+
+        <label>3. Select Real-Time Time Slot</label>
+        <div id="slotsContainer" class="slots-grid">
+          <div style="font-size:0.85rem;color:#888;">Select date to inspect slots...</div>
+        </div>
+
+        <label for="notes">Special Requests / Requirements</label>
+        <input type="text" id="notes" placeholder="e.g. Prefer highway route, child seat required">
+
+        <button type="submit" id="submitBtn" class="btn-submit">Confirm VIP Booking</button>
+      </form>
+
+      <div style="text-align:center;margin-top:20px;">
+        <a href="cars.html" style="color:var(--accent-primary);text-decoration:none;font-weight:600;">← Choose a different vehicle</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/toast.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/darkmode.js"></script>
+  <script>
+    const API = window.location.origin.includes(":5000") ? "/api" : "http://localhost:5000/api";
+    const params = new URLSearchParams(window.location.search);
+
+    const carId = params.get("id") || "";
+    const carName = decodeURIComponent(params.get("name") || "Mercedes-Benz S-Class AMG");
+    const carImage = decodeURIComponent(params.get("image") || "mercedes.jpg");
+
+    document.getElementById("carId").value = carId;
+    document.getElementById("carName").innerText = carName;
+
+    let selectedSlot = "10:00 AM - 11:30 AM";
+    let selectedLocationType = "Showroom Visit";
+
+    function resolveImage(img) {
+      if (!img) return "images/mercedes.jpg";
+      const clean = img.replace(/^(images[\/\\]+)+/, "").trim();
+      return "images/" + clean;
+    }
+    document.getElementById("carImage").src = resolveImage(carImage);
+
+
+    // Minimum date: tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dateInput = document.getElementById("bookingDate");
+    dateInput.min = tomorrow.toISOString().split("T")[0];
+    dateInput.value = tomorrow.toISOString().split("T")[0];
+
+    // Autofill user info if logged in
+    try {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        const u = JSON.parse(stored);
+        if (u.name) document.getElementById("userName").value = u.name;
+        if (u.email) document.getElementById("userEmail").value = u.email;
+        if (u.phone) document.getElementById("userPhone").value = u.phone;
+      }
+    } catch(e) {}
+
+    function selectLocation(type) {
+      selectedLocationType = type;
+      document.getElementById("locShowroom").classList.toggle("active", type === "Showroom Visit");
+      document.getElementById("locDoorstep").classList.toggle("active", type === "Doorstep VIP Delivery");
+    }
+
+    async function fetchTimeSlots() {
+      const date = dateInput.value;
+      const container = document.getElementById("slotsContainer");
+      if (!date) return;
+
+      container.innerHTML = `<div style="font-size:0.85rem;color:#888;">Checking MongoDB availability...</div>`;
+
+      try {
+        const res = await fetch(`${API}/bookings/slots?carId=${carId}&date=${date}`);
+        const data = await res.json();
+
+        container.innerHTML = "";
+        let firstAvailable = null;
+
+        data.slots.forEach(s => {
+          const chip = document.createElement("div");
+          chip.className = `slot-chip ${s.available ? '' : 'disabled'}`;
+          chip.innerText = s.slot + (s.available ? '' : ' ✕');
+
+          if (s.available) {
+            if (!firstAvailable) {
+              firstAvailable = s.slot;
+              chip.classList.add("selected");
+              selectedSlot = s.slot;
+            }
+
+            chip.onclick = () => {
+              document.querySelectorAll(".slot-chip").forEach(c => c.classList.remove("selected"));
+              chip.classList.add("selected");
+              selectedSlot = s.slot;
+            };
+          }
+
+          container.appendChild(chip);
+        });
+
+        if (!firstAvailable) {
+          container.innerHTML = `<div style="color:#ef4444;font-size:0.85rem;">All slots booked for this date. Please pick another date.</div>`;
+          selectedSlot = null;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function handleTestDriveSubmit(e) {
+      e.preventDefault();
+      if (!selectedSlot) {
+        showToast("Please choose an available time slot.", "error");
+        return;
+      }
+
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.innerText = "Securing Reservation...";
+
+      const token = localStorage.getItem("token");
+
+      const payload = {
+        carId: document.getElementById("carId").value,
+        carName: carName,
+        image: carImage,
+        name: document.getElementById("userName").value.trim(),
+        email: document.getElementById("userEmail").value.trim(),
+        phone: document.getElementById("userPhone").value.trim(),
+        date: dateInput.value,
+        timeSlot: selectedSlot,
+        locationType: selectedLocationType,
+        notes: document.getElementById("notes").value.trim()
+      };
+
+      try {
+        const res = await fetch(`${API}/bookings`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showToast("🎉 VIP Test Drive booked in MongoDB! Pass generated.", "success");
+          setTimeout(() => {
+            window.location.href = "profile.html";
+          }, 1500);
+        } else {
+          showToast(data.message || "Failed to book test drive.", "error");
+          btn.disabled = false;
+          btn.innerText = "Confirm VIP Booking";
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Server error. Please ensure backend is running.", "error");
+        btn.disabled = false;
+        btn.innerText = "Confirm VIP Booking";
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", fetchTimeSlots);
+  </script>
+
+</body>
+</html>

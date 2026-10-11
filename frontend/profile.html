@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer VIP Portal - AutoElite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <style>
+    .profile-page-wrapper {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+    .profile-header-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 35px;
+    }
+    .profile-avatar-group {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .avatar-circle {
+      width: 75px;
+      height: 75px;
+      border-radius: 50%;
+      background: var(--accent-gradient);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+    }
+    .profile-meta h2 {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+    }
+    .profile-meta p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+    .badge-role {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(37, 99, 235, 0.12);
+      color: var(--accent-primary);
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+    .profile-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--accent-primary);
+      color: white;
+    }
+    .activity-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 18px;
+      display: grid;
+      grid-template-columns: 140px 1fr auto;
+      gap: 24px;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s;
+    }
+    @media(max-width: 768px) {
+      .activity-card { grid-template-columns: 1fr; text-align: center; }
+      .activity-card img { margin: 0 auto; }
+    }
+    .activity-card img {
+      width: 140px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .activity-info h3 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      margin-bottom: 6px;
+    }
+    .activity-info p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .status-confirmed { background: #dcfce7; color: #166534; }
+    .status-completed { background: #e0f2fe; color: #0369a1; }
+    .status-cancelled { background: #fee2e2; color: #991b1b; }
+    
+    .pass-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .pass-content {
+      background: var(--bg-surface);
+      border-radius: 20px;
+      max-width: 500px;
+      width: 100%;
+      padding: 30px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" style="text-decoration:none;color:inherit;"><h2>🚗 AutoElite</h2></a>
+    <div class="nav-controls">
+      <a href="cars.html"><button>Showroom</button></a>
+      <a href="compare.html"><button>Compare</button></a>
+      <a href="calculator.html"><button>EMI Calculator</button></a>
+      <button onclick="toggleDarkMode()">🌙</button>
+      <button onclick="handleLogout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="profile-page-wrapper">
+    <!-- PROFILE HEADER -->
+    <div class="profile-header-card">
+      <div class="profile-avatar-group">
+        <div class="avatar-circle" id="userInitial">U</div>
+        <div class="profile-meta">
+          <h2 id="userName">Customer Name</h2>
+          <p id="userEmail">customer@example.com</p>
+          <span class="badge-role" id="userRole">VIP Member</span>
+        </div>
+      </div>
+      <div>
+        <button class="btn-secondary" onclick="openEditProfile()">✏️ Edit Profile</button>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="profile-tabs">
+      <button id="tabBookings" class="tab-btn active" onclick="switchTab('bookings')">📅 VIP Test Drives (<span id="countBookings">0</span>)</button>
+      <button id="tabPurchases" class="tab-btn" onclick="switchTab('purchases')">💳 Vehicle Orders (<span id="countPurchases">0</span>)</button>
+    </div>
+
+    <!-- BOOKINGS CONTAINER -->
+    <div id="bookingsSection">
+      <div id="bookingsList">
+        <div style="text-align:center;padding:40px;color:#888;">Fetching your bookings from MongoDB...</div>
+      </div>
+    </div>
+
+    <!-- PURCHASES CONTAINER -->
+    <div id="purchasesSection" style="display:none;">
+      <div id="purchasesList">
+        <div style="text-align:center;padding:40px;color:#888;">Fetching your orders from MongoDB...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINT VIP PASS MODAL -->
+  <div id="passModal" class="pass-modal">
+    <div class="pass-content">
+      <h3 style="margin-top:0;font-family:var(--font-heading);">🎫 VIP Test Drive Pass</h3>
+      <div id="passDetails" style="margin:20px 0;line-height:1.7;"></div>
+      <button class="btn-primary" style="width:100%;margin-bottom:10px;" onclick="window.print()">🖨️ Print VIP Pass</button>
+      <button class="btn-outline" style="width:100%;" onclick="closePassModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- EDIT PROFILE MODAL -->
+  <div id="editProfileModal" class="pass-modal">
+    <div class="pass-content">
+      <h3 style="margin-top:0;">Edit Account Information</h3>
+      <form id="editProfileForm" onsubmit="saveProfile(event)">
+        <div style="margin:15px 0;">
+          <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:6px;">Full Name</label>
+          <input type="text" id="editName" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border-subtle);" required>
+        </div>
+        <div style="margin:15px 0;">
+          <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:6px;">Phone Number</label>
+          <input type="tel" id="editPhone" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border-subtle);" required>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;margin-bottom:10px;">Save Changes</button>
+        <button type="button" class="btn-outline" style="width:100%;" onclick="closeEditModal()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/toast.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/darkmode.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>
+

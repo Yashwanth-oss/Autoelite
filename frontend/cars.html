@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Showroom - AutoElite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cars.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" style="text-decoration:none;color:inherit;"><h2>🚗 AutoElite</h2></a>
+    
+    <div class="nav-controls">
+      <input type="text" id="search" placeholder="Search by model, brand, spec..." onkeyup="searchCars()">
+      <a href="index.html"><button>Home</button></a>
+      <a href="compare.html"><button>Compare</button></a>
+      <a href="calculator.html"><button>EMI Calc</button></a>
+      <a href="profile.html"><button>My Portal</button></a>
+      <a href="admin.html"><button>Admin</button></a>
+      <button onclick="toggleDarkMode()">🌙</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="showroom-header">
+    <h1 class="title">Exclusive Fleet Showroom</h1>
+    <p class="subtitle">Hand-picked luxury, performance, and electric automobiles powered by MongoDB</p>
+    
+    <!-- CATEGORY FILTER BUTTONS -->
+    <div class="category-filters">
+      <button id="filter-all" class="filter-btn active" onclick="filterCategory('all')">All Fleet</button>
+      <button id="filter-luxury" class="filter-btn" onclick="filterCategory('Luxury')">Luxury</button>
+      <button id="filter-sports" class="filter-btn" onclick="filterCategory('Sports')">Sports</button>
+      <button id="filter-suv" class="filter-btn" onclick="filterCategory('SUV')">SUV</button>
+      <button id="filter-electric" class="filter-btn" onclick="filterCategory('Electric')">Electric</button>
+      <button id="filter-sedan" class="filter-btn" onclick="filterCategory('Sedan')">Sedan</button>
+    </div>
+  </div>
+
+  <main>
+    <div id="carsContainer" class="cars-container">
+      <div style="text-align:center;width:100%;padding:40px;color:#888;">
+        Connecting to MongoDB and fetching vehicle catalog...
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 AutoElite Luxury Motors. All Rights Reserved. Built with Node.js, Express & MongoDB.</p>
+  </footer>
+
+  <script src="js/toast.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/darkmode.js"></script>
+  <script src="js/cars.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+.auth-page-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px);
+  padding: 40px 20px;
+}
+
+.auth-container {
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  box-shadow: var(--shadow-lg, 0 10px 25px rgba(0,0,0,0.08));
+  text-align: left;
+}
+
+.auth-container h2 {
+  font-family: var(--font-heading, 'Outfit', sans-serif);
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: var(--text-primary, #0f172a);
+}
+
+.auth-container p.subtitle {
+  color: var(--text-secondary, #64748b);
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.auth-container label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-secondary, #64748b);
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background: var(--bg-primary, #f8fafc);
+  color: var(--text-primary, #0f172a);
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+body.dark .auth-container input {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.auth-container input:focus {
+  border-color: var(--accent-primary, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.btn-auth {
+  width: 100%;
+  padding: 13px;
+  background: var(--accent-primary, #2563eb);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35);
+  margin-top: 6px;
+}
+
+.btn-auth:hover {
+  background: var(--accent-hover, #1d4ed8);
+  transform: translateY(-2px);
+}
+
+.auth-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #64748b);
+}
+
+.auth-footer a {
+  color: var(--accent-primary, #2563eb);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+.demo-creds {
+  margin-top: 18px;
+  padding: 12px;
+  background: var(--bg-primary, #f8fafc);
+  border: 1px dashed var(--border-subtle, #e2e8f0);
+  border-radius: 10px;
+  text-align: left;
+}
+
+body.dark .demo-creds {
+  background: rgba(255, 255, 255, 0.04);
+}

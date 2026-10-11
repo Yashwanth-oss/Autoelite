@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - AutoElite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" style="text-decoration:none;color:inherit;"><h2>🚗 AutoElite</h2></a>
+    <div>
+      <a href="cars.html"><button>Showroom</button></a>
+      <a href="index.html"><button>Home</button></a>
+    </div>
+  </nav>
+
+  <div class="auth-page-wrapper">
+    <div class="auth-container">
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Log in to manage bookings and purchases</p>
+
+      <form id="loginForm">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="e.g. admin@autoelite.com" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+
+        <button type="submit" class="btn-auth">Sign In</button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Don't have an account? <a href="register.html">Create Account</a></p>
+        <div class="demo-creds">
+          <small>🔑 <b>Admin Demo:</b> admin@autoelite.com / adminpassword123</small><br>
+          <small>👤 <b>User Demo:</b> vikram@example.com / userpassword123</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/toast.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/darkmode.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

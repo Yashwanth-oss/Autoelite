@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luxury Vehicle EMI & Financing Calculator - AutoElite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <style>
+    .calc-container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 30px;
+    }
+    @media(max-width: 850px) {
+      .calc-grid { grid-template-columns: 1fr; }
+    }
+    .calc-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: var(--shadow-md);
+    }
+    .slider-group {
+      margin-bottom: 24px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .slider-header label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+    .slider-value {
+      font-weight: 800;
+      color: var(--accent-primary);
+      font-size: 1.1rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 5px;
+      background: var(--border-subtle);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .result-box {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: white;
+      border-radius: 20px;
+      padding: 36px 30px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+    }
+    .emi-amount {
+      font-size: 3rem;
+      font-weight: 800;
+      font-family: var(--font-heading);
+      margin: 12px 0 24px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 0.95rem;
+    }
+    .breakdown-row:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" style="text-decoration:none;color:inherit;"><h2>🚗 AutoElite</h2></a>
+    <div class="nav-controls">
+      <a href="cars.html"><button>Showroom</button></a>
+      <a href="compare.html"><button>Compare</button></a>
+      <a href="profile.html"><button>My Portal</button></a>
+      <button onclick="toggleDarkMode()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="calc-container">
+    <div style="text-align:center;margin-bottom:35px;">
+      <h1 class="title">🧮 Luxury Vehicle Financing Calculator</h1>
+      <p style="color:var(--text-secondary);font-size:1.05rem;">Calculate tailored monthly installments, interest rates, and bespoke financing schemes</p>
+    </div>
+
+    <div class="calc-grid">
+      <!-- INPUTS -->
+      <div class="calc-card">
+        <div style="margin-bottom:24px;">
+          <label style="display:block;font-weight:700;margin-bottom:8px;">Choose Model to Populate Price</label>
+          <select id="calcCarSelect" onchange="handleCarSelect()" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border-subtle);background:var(--bg-primary);color:var(--text-primary);"></select>
+        </div>
+
+        <!-- VEHICLE PRICE -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <label>Vehicle On-Road Price</label>
+            <span class="slider-value" id="valPrice">₹1,85,00,000</span>
+          </div>
+          <input type="range" id="sliderPrice" min="1500000" max="50000000" step="100000" value="18500000" oninput="calculateEMI()">
+        </div>
+
+        <!-- DOWN PAYMENT -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <label>Down Payment (<span id="valDownPct">20%</span>)</label>
+            <span class="slider-value" id="valDown">₹37,00,000</span>
+          </div>
+          <input type="range" id="sliderDownPct" min="10" max="75" step="5" value="20" oninput="calculateEMI()">
+        </div>
+
+        <!-- TENURE -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <label>Loan Tenure</label>
+            <span class="slider-value" id="valTenure">60 Months (5 Years)</span>
+          </div>
+          <input type="range" id="sliderTenure" min="12" max="84" step="12" value="60" oninput="calculateEMI()">
+        </div>
+
+        <!-- INTEREST RATE -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <label>Annual Interest Rate</label>
+            <span class="slider-value" id="valRate">8.5% p.a.</span>
+          </div>
+          <input type="range" id="sliderRate" min="6.0" max="14.0" step="0.25" value="8.5" oninput="calculateEMI()">
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="result-box">
+        <span style="text-transform:uppercase;letter-spacing:1px;font-size:0.85rem;font-weight:700;opacity:0.85;">Estimated Monthly Installment</span>
+        <div class="emi-amount" id="resEMI">₹3,04,320</div>
+
+        <div style="text-align:left;margin-top:20px;">
+          <div class="breakdown-row">
+            <span>Principal Loan Amount:</span>
+            <b id="resPrincipal">₹1,48,00,000</b>
+          </div>
+          <div class="breakdown-row">
+            <span>Total Interest Payable:</span>
+            <b id="resInterest">₹34,59,200</b>
+          </div>
+          <div class="breakdown-row">
+            <span>Total Repayment:</span>
+            <b id="resTotal">₹1,82,59,200</b>
+          </div>
+        </div>
+
+        <button class="btn-primary" style="background:#ffffff;color:#2563eb;width:100%;margin-top:30px;padding:14px;font-size:1.05rem;" onclick="proceedToBooking()">
+          Apply for Concierge Financing →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/toast.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/darkmode.js"></script>
+  <script src="js/calculator.js"></script>
+</body>
+</html>
+

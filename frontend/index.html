@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoElite - Luxury Automobile Showcase</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cars.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+</head>
+<body>
+
+  <!-- TOP NAVIGATION -->
+  <nav>
+    <a href="index.html" style="text-decoration:none;color:inherit;">
+      <h2>🚗 AutoElite</h2>
+    </a>
+
+    <div class="nav-controls">
+      <input type="text" id="search" placeholder="Search cars..." onkeyup="searchCars()">
+      <a href="cars.html"><button class="nav-btn">Showroom</button></a>
+      <a href="compare.html"><button class="nav-btn">Compare</button></a>
+      <a href="calculator.html"><button class="nav-btn">EMI Calculator</button></a>
+      <a href="profile.html"><button class="nav-btn">My Portal</button></a>
+      <a href="admin.html"><button class="nav-btn">Admin</button></a>
+      
+      <span id="userStatus" style="font-weight:600;font-size:0.9rem;margin:0 5px;"></span>
+      
+      <button onclick="toggleDarkMode()">🌙</button>
+      <button id="authBtn" onclick="handleAuthAction()">Login</button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="hero">
+    <div class="hero-content">
+      <span class="hero-tag">EXPERIENCE AUTOMOTIVE PERFECTION</span>
+      <h1>Find Your Dream Car</h1>
+      <p>Luxury • Performance • Unrivaled Engineering</p>
+      <div class="hero-buttons">
+        <a href="cars.html"><button class="hero-btn-primary">Browse 26+ Vehicles</button></a>
+        <a href="featured.html"><button class="hero-btn-secondary">⭐ Featured Supercars</button></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HIGHLIGHT STATS -->
+  <section class="metrics-bar">
+    <div class="metric-item">
+      <h3>26+</h3>
+      <p>Curated Luxury Models</p>
+    </div>
+    <div class="metric-item">
+      <h3>100%</h3>
+      <p>Certified Inspections</p>
+    </div>
+    <div class="metric-item">
+      <h3>4.9 ★</h3>
+      <p>Customer Satisfaction</p>
+    </div>
+    <div class="metric-item">
+      <h3>MongoDB</h3>
+      <p>Real-Time Cloud Inventory</p>
+    </div>
+  </section>
+
+  <!-- FEATURED CARS SECTION -->
+  <section class="section-container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Featured Supercars & Sedans</h2>
+        <p class="section-sub">Directly fetched from your MongoDB database</p>
+      </div>
+      <a href="cars.html"><button class="btn-primary">View All Vehicles →</button></a>
+    </div>
+
+    <div id="carsContainer" class="cars-container">
+      <div style="text-align:center;width:100%;padding:40px;color:#888;">
+        Loading premier vehicles from MongoDB...
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY AUTOELITE -->
+  <section class="why-us-section">
+    <h2 class="title">The AutoElite Standard</h2>
+    <div class="features-grid">
+      <div class="feature-box">
+        <div class="feature-icon">🏎️</div>
+        <h3>VIP Test Drives</h3>
+        <p>Book instant showroom or doorstep test drives with real-time slot scheduling.</p>
+      </div>
+      <div class="feature-box">
+        <div class="feature-icon">🔒</div>
+        <h3>Instant Acquisition</h3>
+        <p>Seamless checkout supporting UPI, Card, Net Banking and Bespoke Financing.</p>
+      </div>
+      <div class="feature-box">
+        <div class="feature-icon">⚡</div>
+        <h3>High-Performance Specs</h3>
+        <p>Complete horsepower, 0-100 km/h acceleration, top speed, and engineering telemetry.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <p><b>AutoElite Luxury Automobile Platform</b></p>
+      <p>© 2026 AutoElite Motors. Full-Stack Node.js, Express & MongoDB Architecture.</p>
+      <div style="margin-top:10px;">
+        <a href="cars.html" style="color:#94a3b8;margin:0 10px;text-decoration:none;">Fleet</a>
+        <a href="admin.html" style="color:#94a3b8;margin:0 10px;text-decoration:none;">Admin Dashboard</a>
+        <a href="login.html" style="color:#94a3b8;margin:0 10px;text-decoration:none;">Member Portal</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/toast.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/darkmode.js"></script>
+  <script>
+    // Update auth button and status based on login
+    (function checkUserStatus() {
+      try {
+        const stored = localStorage.getItem("user");
+        const isLoggedIn = localStorage.getItem("loggedIn");
+        const authBtn = document.getElementById("authBtn");
+        const userStatus = document.getElementById("userStatus");
+
+        if (isLoggedIn && stored) {
+          const user = JSON.parse(stored);
+          userStatus.innerText = `👤 ${user.name.split(' ')[0]}`;
+          authBtn.innerText = "Logout";
+        } else {
+          userStatus.innerText = "";
+          authBtn.innerText = "Login";
+        }
+      } catch (e) {}
+    })();
+
+    function handleAuthAction() {
+      const isLoggedIn = localStorage.getItem("loggedIn");
+      if (isLoggedIn) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("loggedIn");
+        if (typeof showToast === "function") {
+          showToast("Signed out successfully.", "info");
+          setTimeout(() => window.location.reload(), 600);
+        } else {
+          window.location.reload();
+        }
+      } else {
+        window.location.href = "login.html";
+      }
+    }
+  </script>
+
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account - AutoElite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" style="text-decoration:none;color:inherit;"><h2>🚗 AutoElite</h2></a>
+    <div>
+      <a href="cars.html"><button>Showroom</button></a>
+      <a href="index.html"><button>Home</button></a>
+    </div>
+  </nav>
+
+  <div class="auth-page-wrapper">
+    <div class="auth-container">
+      <h2>Join AutoElite</h2>
+      <p class="subtitle">Create an account to book test drives and track acquisitions</p>
+
+      <form id="registerForm">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="Enter your full name" required>
+
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="Enter your email" required>
+
+        <label for="password">Password (Minimum 6 characters)</label>
+        <input type="password" id="password" minlength="6" placeholder="Choose a secure password" required>
+
+        <button type="submit" class="btn-auth">Register Account</button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a href="login.html">Sign In Here</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/toast.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/darkmode.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

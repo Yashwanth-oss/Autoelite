@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Featured Supercars - AutoElite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cars.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" style="text-decoration:none;color:inherit;"><h2>🚗 AutoElite</h2></a>
+    <div class="nav-controls">
+      <input type="text" id="search" placeholder="Search cars..." onkeyup="searchCars()">
+      <a href="cars.html"><button>All Cars</button></a>
+      <a href="index.html"><button>Home</button></a>
+      <button onclick="toggleDarkMode()">🌙</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="showroom-header">
+    <h1 class="title">⭐ Premier Featured Vehicles</h1>
+    <p class="subtitle">Handcrafted hypercars, flagship grand tourers, and boundary-pushing electric icons</p>
+  </div>
+
+  <main>
+    <div id="carsContainer" class="cars-container">
+      <div style="text-align:center;width:100%;padding:40px;color:#888;">
+        Fetching featured vehicles from MongoDB...
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 AutoElite Motors. Premier Featured Fleet.</p>
+  </footer>
+
+  <script src="js/toast.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/darkmode.js"></script>
+  <script src="js/cars.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      loadCars("all", true);
+    });
+  </script>
+</body>
+</html>

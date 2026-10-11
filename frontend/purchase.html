@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purchase Vehicle - AutoElite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/purchase.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" style="text-decoration:none;color:inherit;"><h2>🚗 AutoElite</h2></a>
+    <div class="nav-controls">
+      <a href="cars.html"><button>Showroom</button></a>
+      <a href="compare.html"><button>Compare</button></a>
+      <a href="calculator.html"><button>EMI Calculator</button></a>
+      <button onclick="toggleDarkMode()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="purchase-wrapper">
+    <div class="purchase-container">
+      <h2>💳 Complete Your Acquisition</h2>
+      <p class="subtitle">Secure vehicle checkout powered by MongoDB backend</p>
+
+      <div class="purchase-summary-card">
+        <img id="carImage" class="car-image" src="images/mercedes.jpg" alt="Selected Car" onerror="this.src='images/mercedes.jpg'">
+        <div>
+          <h3 id="carName">Vehicle</h3>
+          <p id="carPrice" style="color:#10b981;font-size:1.2rem;font-weight:700;margin-top:5px;"></p>
+        </div>
+      </div>
+
+      <form id="purchaseForm" onsubmit="handlePurchaseSubmit(event)">
+        <input type="hidden" id="carId">
+
+        <label for="buyName">Full Legal Name</label>
+        <input type="text" id="buyName" placeholder="e.g. Aditi Roy" required>
+
+        <label for="buyEmail">Email Address</label>
+        <input type="email" id="buyEmail" placeholder="e.g. aditi@example.com" required>
+
+        <label for="paymentMethod">Payment Method</label>
+        <select id="paymentMethod" required>
+          <option value="UPI">UPI (Google Pay / PhonePe / Paytm)</option>
+          <option value="Card">Credit / Debit Card (Visa, MasterCard, Amex)</option>
+          <option value="Net Banking">Net Banking (HDFC, ICICI, SBI)</option>
+          <option value="Financing">AutoElite Bespoke Luxury Financing</option>
+        </select>
+
+        <div class="security-notice">
+          🔒 256-Bit SSL Encrypted & Verified Transaction
+        </div>
+
+        <button type="submit" id="payBtn" class="btn-pay">Complete Purchase & Issue Receipt</button>
+      </form>
+
+      <div style="text-align:center;margin-top:20px;">
+        <a href="cars.html" style="color:var(--accent-primary);text-decoration:none;font-weight:600;">← Return to Showroom</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/toast.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/darkmode.js"></script>
+  <script>
+    const API = window.location.origin.includes(":5000") ? "/api" : "http://localhost:5000/api";
+    const params = new URLSearchParams(window.location.search);
+
+    const carId = params.get("id") || "";
+    const carName = decodeURIComponent(params.get("name") || "Mercedes-Benz S-Class AMG");
+    const carImage = decodeURIComponent(params.get("image") || "mercedes.jpg");
+
+    document.getElementById("carId").value = carId;
+    document.getElementById("carName").innerText = carName;
+
+    function resolveImage(img) {
+      if (!img) return "images/mercedes.jpg";
+      const clean = img.replace(/^(images[\/\\]+)+/, "").trim();
+      return "images/" + clean;
+    }
+    document.getElementById("carImage").src = resolveImage(carImage);
+
+
+    // Autofill user from localStorage
+    try {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        const u = JSON.parse(stored);
+        if (u.name) document.getElementById("buyName").value = u.name;
+        if (u.email) document.getElementById("buyEmail").value = u.email;
+      }
+    } catch(e) {}
+
+    // Fetch car price if id provided
+    if (carId) {
+      fetch(`${API}/cars/${carId}`)
+        .then(res => res.json())
+        .then(car => {
+          const c = Array.isArray(car) ? car[0] : car;
+          if (c && c.price) {
+            document.getElementById("carPrice").innerText = "Price: ₹" + Number(c.price).toLocaleString("en-IN");
+          }
+        })
+        .catch(e => console.log(e));
+    }
+
+    async function handlePurchaseSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById("payBtn");
+      btn.disabled = true;
+      btn.innerText = "Processing Transaction...";
+
+      const token = localStorage.getItem("token");
+
+      const payload = {
+        carId: document.getElementById("carId").value,
+        carName: carName,
+        image: carImage,
+        name: document.getElementById("buyName").value.trim(),
+        email: document.getElementById("buyEmail").value.trim(),
+        payment: document.getElementById("paymentMethod").value
+      };
+
+      try {
+        const res = await fetch(`${API}/purchase`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`🎉 Order Placed! Ref: ${data.transactionId || 'TXN-CONFIRMED'}`, "success");
+          setTimeout(() => {
+            window.location.href = "profile.html";
+          }, 1500);
+        } else {
+          showToast(data.message || "Purchase processing failed.", "error");
+          btn.disabled = false;
+          btn.innerText = "Complete Purchase & Issue Receipt";
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Server error. Please ensure backend server is running.", "error");
+        btn.disabled = false;
+        btn.innerText = "Complete Purchase & Issue Receipt";
+      }
+    }
+  </script>
+
+</body>
+</html>

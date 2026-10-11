@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Details - AutoElite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/details.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" style="text-decoration:none;color:inherit;"><h2>🚗 AutoElite</h2></a>
+    <div>
+      <a href="cars.html"><button>Showroom</button></a>
+      <a href="index.html"><button>Home</button></a>
+      <button onclick="toggleDarkMode()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="details-page-wrapper">
+    <div id="carDetails" class="details-container">
+      <div style="text-align:center;padding:50px;color:#888;">
+        Loading vehicle specifications from MongoDB...
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 AutoElite Motors. Vehicle Engineering & Specifications.</p>
+  </footer>
+
+  <script src="js/toast.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/darkmode.js"></script>
+  <script src="js/details.js"></script>
+</body>
+</html>
